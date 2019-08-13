@@ -15,10 +15,10 @@ class World: PApplet() {
     var clickedMouseX = 0
     var clickedMouseY = 0
 
-    val worldSizeX = 100
-    val worldSizeY = 100
+    val worldSizeX = 1000
+    val worldSizeY = 1000
 
-    var worldPixelSize = 20
+    var worldPixelSize = 1
 
     var cameraPosX = 0
     var cameraPosY = 0
@@ -26,7 +26,11 @@ class World: PApplet() {
     var savedCameraX = 0
     var savedCameraY = 0
 
-    var counter = 0
+    var counter: Double = 0.0
+
+    val points = mutableListOf<Double>()
+
+    val perlinDelta = 15f
 
     override fun settings() {
         size(1080, 720)
@@ -34,17 +38,47 @@ class World: PApplet() {
 
     override fun setup() {
         worldGrid = List(worldSizeX) { List(worldSizeY) { WorldPixel() } }
+        var largestPixelValue = -1f
+        val values = List(worldSizeX) { x -> List(worldSizeY) { y -> noise(x.toFloat() / worldSizeX * perlinDelta, y.toFloat() / worldSizeY * perlinDelta) * 255 } }
+
+        val maxValue = values.mapNotNull { l -> l.max() }.max()!!
+        val minValue = values.mapNotNull { l -> l.min() }.min()!!
+
+        val minMaxDiff = maxValue - minValue
+
+        println("max: $maxValue")
+        println("min: $minValue")
+
+        val mappedValues = values.map { l -> l.map { v -> ((v - minValue) / minMaxDiff) * 255 } }
+
+        val maxValue2 = mappedValues.mapNotNull { l -> l.max() }.max() ?: 255
+        val minValue2 = mappedValues.mapNotNull { l -> l.min() }.min() ?: 0
+
+        println("max2: $maxValue2")
+        println("min2: $minValue2")
+
         for ((x, yList) in worldGrid.iterator().withIndex()) {
             for ((y, worldPixel) in yList.iterator().withIndex()) {
-                worldPixel.findRGB(x, y)
+                val value = noise(x.toFloat() / worldSizeX * perlinDelta, y.toFloat() / worldSizeY * perlinDelta) * 255
+                if (value > largestPixelValue) largestPixelValue = value
+                //worldPixel.setRGBWhite(value)
+
+
+                worldPixel.setColor(mappedValues[x][y])
             }
         }
+
+
+        println("finished world grid: $largestPixelValue")
         frameRate(30f)
         ellipseMode(RADIUS)
         background(0)
     }
 
     override fun draw() {
+        stroke(0f)
+        fill(0f)
+        rect(0f, 0f, width.toFloat(), height.toFloat())
         drawGrid()
     }
 
@@ -62,9 +96,9 @@ class World: PApplet() {
         for (i in startIndexX..endIndexX) {
             for (j in startIndexY..endIndexY) {
                 val worldPixel = worldGrid[i][j]
-                val pixelRGB = worldPixel.RGB
+                val pixelRGB = worldPixel.color
                 fill(pixelRGB.first.toFloat(), pixelRGB.second.toFloat(), pixelRGB.third.toFloat())
-                if (worldPixelSize < 5) {
+                if (worldPixelSize < 500) {
                     stroke(pixelRGB.first.toFloat(), pixelRGB.second.toFloat(), pixelRGB.third.toFloat())
                 } else {
                     stroke(0f)
@@ -115,6 +149,7 @@ class World: PApplet() {
     }
 
     override fun mouseWheel(event: MouseEvent?) {
+        //TODO scale camera value with difference in worldPixelSize so scrolling makes more sense
         if(event != null) {
             val value = event.count
             if (value > 0 && worldPixelSize > 1) {

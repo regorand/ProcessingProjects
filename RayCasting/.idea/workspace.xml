@@ -2,13 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f95103eb-e7d8-4c09-94bf-b2e0742919d9" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../world/src/main/kotlin/rego/world/WorldPixel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/META-INF/rego.RayCasting.main.kotlin_module" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/rego/ray/LightPoint.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/rego/ray/Player.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/rego/ray/RayCasting.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/rego/ray/Wall.class" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../world/src/main/kotlin/rego/perlin/Perlin.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../world/src/main/kotlin/rego/world/World.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../world/src/main/kotlin/rego/world/World.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../world/src/main/kotlin/rego/world/WorldPixel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../world/src/main/kotlin/rego/world/WorldPixel.kt" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,6 +16,23 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="RayCasting" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="RayCasting" />
