@@ -86,7 +86,10 @@ class World: PApplet() {
         stroke(0f)
         fill(0f)
         rect(0f, 0f, width.toFloat(), height.toFloat())
-        drawGrid()
+        //drawGrid()
+        camera.draw(worldGrid)
+        stroke(255)
+        rect(0f, 100f, 100f, 100f)
     }
 
     fun drawGrid() {
@@ -154,7 +157,7 @@ class World: PApplet() {
             keyPressedMap[key] = false
         }
     }
-
+/*
     override fun mouseWheel(event: MouseEvent?) {
         //TODO scale camera value with difference in worldPixelSize so scrolling makes more sense
 
@@ -176,4 +179,5 @@ class World: PApplet() {
             cameraPosY = (hoveredWorldPixelY * worldPixelSize - mouseY).roundToInt()
         }
     }
+    */
 }
