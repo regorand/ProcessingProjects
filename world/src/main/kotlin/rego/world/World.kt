@@ -1,5 +1,6 @@
 package rego.world
 
+import rego.engine.Camera
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.event.MouseEvent
@@ -19,7 +20,7 @@ class World: PApplet() {
     val worldSizeX = 100
     val worldSizeY = 100
 
-    var worldPixelSize = 5.0
+    var worldPixelSize = 5
 
     val scrollScaling = 1.1
 
@@ -36,12 +37,14 @@ class World: PApplet() {
 
     val perlinDelta = 15f
 
+    var camera = Camera(worldPixelSize, worldSizeX, worldSizeY, width, height)
+
     override fun settings() {
         size(1080, 720)
     }
 
     override fun setup() {
-        worldGrid = List(worldSizeX) { List(worldSizeY) { WorldPixel() } }
+        worldGrid = List(worldSizeX) { List(worldSizeY) { WorldPixel(this) } }
         var largestPixelValue = -1f
         val values = List(worldSizeX) { x -> List(worldSizeY) { y -> noise(x.toFloat() / worldSizeX * perlinDelta, y.toFloat() / worldSizeY * perlinDelta) * 255 } }
 

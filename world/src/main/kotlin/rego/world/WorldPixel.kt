@@ -1,17 +1,28 @@
 package rego.world
 
+import processing.core.PApplet
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
 
-class WorldPixel {
+class WorldPixel(val drawContext: PApplet) {
     var color: Triple<Int, Int, Int> = Triple(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
 
     private val waterLevel = 150
     private val grassLevel = 200
     private val mountainLevel  = 240
+
+    fun draw(lowerX: Int, lowerY: Int, sizeX: Int, sizeY: Int) {
+        drawContext.fill(color.first.toFloat(), color.second.toFloat(), color.third.toFloat())
+        if (sizeX < 500) {
+            drawContext.stroke(color.first.toFloat(), color.second.toFloat(), color.third.toFloat())
+        } else {
+            drawContext.stroke(0f)
+        }
+        drawContext.rect(lowerX.toFloat(), lowerY.toFloat(), sizeX.toFloat(), sizeY.toFloat())
+    }
 
     fun setColor(value: Float) {
         color = when {
