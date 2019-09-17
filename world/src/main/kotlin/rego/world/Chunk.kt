@@ -7,7 +7,7 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 
 
-class WorldPixel(val drawContext: PApplet) {
+class Chunk(val drawContext: PApplet) {
     var color: Triple<Int, Int, Int> = Triple(Random.nextInt(255), Random.nextInt(255), Random.nextInt(255))
 
     private val waterLevel = 150

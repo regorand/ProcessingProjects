@@ -1,52 +1,69 @@
 package rego.engine
 
-import rego.world.WorldPixel
-import kotlin.math.ceil
-import kotlin.math.floor
+import rego.world.Chunk
 import kotlin.math.min
 
-class Camera (val worldPixelSize: Int, val worldSizeX: Int, val worldSizeY: Int, val screenWidth: Int, val screenHeight: Int){
+class Camera (val chunkSize: Int, val worldSizeX: Int, val worldSizeY: Int, val screenWidth: Int, val screenHeight: Int){
 
+    var centerX = worldSizeX / 2
+    var centerY = worldSizeY / 2
 
+    private val zoomLevel = 3.0
 
-    val centerX = worldSizeX / 2
-    val centerY = worldSizeY / 2
+    fun draw(worldGrid: List<List<Chunk>>) {
 
-    private val zoomLevel = 1.0
+        //TODO fix Bug that causes black bars when scrolling around while zoomed in
 
-    fun draw(worldGrid: List<List<WorldPixel>>) {
+        val deltaChunkX = (((screenWidth / 2) / chunkSize + 1) / zoomLevel).toInt()
+        val deltaChunkY = (((screenHeight / 2) / chunkSize + 1) / zoomLevel).toInt()
 
-        //TODO check lowest amount so that it gets drawn closer to center if world is completely visible, camera center should always be screen center
+        var startChunkX = centerX - deltaChunkX
+        var endChunkX = centerX + deltaChunkX
+        var startChunkY = centerY  - deltaChunkY
+        var endChunkY = centerY + deltaChunkY
 
-        val lowerX = centerX - screenWidth/2
-        val lowerXWorldPixelIndex: Int = lowerX / worldPixelSize
-        val lowerXRemainder = lowerX % zoomLevel
+        //var pixelDiffX = (screenWidth - (worldSizeX * chunkSize * zoomLevel).toInt()) / 2
+        var pixelDiffX = -startChunkX * chunkSize
+        var pixelDiffY = -startChunkY * chunkSize
 
-        print("lowerX: $lowerX")
-        print("centerX: $centerX")
-        print("xPixelIndex: $lowerXWorldPixelIndex")
+        if (startChunkX < 0) {
+            startChunkX = 0
+        }
+        if (endChunkX >= worldGrid.size) {
+            endChunkX = worldGrid.size - 1
+        }
+        if (startChunkY < 0) {
+            startChunkY = 0
+        }
+        if (endChunkY >= worldGrid.first().size) {
+            endChunkY = worldGrid.first().size - 1
+        }
 
-        val lowerY = centerX - screenHeight/2
-        val lowerYWorldPixelIndex: Int = lowerY / worldPixelSize
-        val lowerYRemainder = lowerY % zoomLevel
-
-        val amountToDrawX = screenWidth / worldPixelSize + 1
-        val upperXWorldPixelIndex = min(lowerXWorldPixelIndex + amountToDrawX, worldGrid.size - 1)
-
-
-        val amountToDrawY = screenHeight / worldPixelSize + 1
-        val upperYWorldPixelIndex = min(lowerYWorldPixelIndex + amountToDrawY, worldGrid.first().size - 1)
-
-        for ((xCount, x) in (lowerXWorldPixelIndex..upperXWorldPixelIndex).withIndex()) {
-            for ((yCount, y) in (lowerYWorldPixelIndex..upperYWorldPixelIndex).withIndex()) {
+        for ((xCount, x) in (startChunkX..endChunkX).withIndex()) {
+            for ((yCount, y) in (startChunkY..endChunkY).withIndex()) {
+                val drawnChunkSize = (chunkSize * zoomLevel).toInt()
                 worldGrid[x][y].draw(
-                    (xCount * worldPixelSize - lowerXRemainder).toInt(),
-                    (yCount * worldPixelSize - lowerYRemainder).toInt(),
-                    worldPixelSize,
-                    worldPixelSize)
+                    (xCount * drawnChunkSize + pixelDiffX),
+                    (yCount * drawnChunkSize + pixelDiffY),
+                    drawnChunkSize,
+                    drawnChunkSize)
             }
         }
+
     }
+
+    fun move(deltaX: Int, deltaY: Int) {
+        centerX += deltaX / chunkSize
+        centerY += deltaY / chunkSize
+
+/*
+        if (cameraPosX < 0) cameraPosX = 0
+        if (cameraPosY < 0) cameraPosY = 0
+        if (cameraPosX > worldSizeX * worldPixelSize - width) cameraPosX = (worldSizeX * worldPixelSize - width).toInt()
+        if (cameraPosY > worldSizeY * worldPixelSize - height) cameraPosY = (worldSizeY * worldPixelSize - height).toInt()
+        */
+    }
+
 
     fun getVisibleBoundaries() {
 

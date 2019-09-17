@@ -4,11 +4,10 @@ import rego.engine.Camera
 import processing.core.PApplet
 import processing.core.PConstants
 import processing.event.MouseEvent
-import kotlin.math.roundToInt
 
 class World: PApplet() {
 
-    lateinit var worldGrid: List<List<WorldPixel>>
+    lateinit var worldGrid: List<List<Chunk>>
 
     private val keyPressedMap: MutableMap<Char, Boolean> = mutableMapOf()
 
@@ -37,14 +36,16 @@ class World: PApplet() {
 
     val perlinDelta = 15f
 
-    var camera = Camera(worldPixelSize, worldSizeX, worldSizeY, width, height)
+    lateinit var camera: Camera
 
     override fun settings() {
         size(1080, 720)
     }
 
     override fun setup() {
-        worldGrid = List(worldSizeX) { List(worldSizeY) { WorldPixel(this) } }
+        worldGrid = List(worldSizeX) { List(worldSizeY) { Chunk(this) } }
+
+
         var largestPixelValue = -1f
         val values = List(worldSizeX) { x -> List(worldSizeY) { y -> noise(x.toFloat() / worldSizeX * perlinDelta, y.toFloat() / worldSizeY * perlinDelta) * 255 } }
 
@@ -80,6 +81,7 @@ class World: PApplet() {
         frameRate(30f)
         ellipseMode(RADIUS)
         background(0)
+        camera = Camera(worldPixelSize, worldSizeX, worldSizeY, width, height)
     }
 
     override fun draw() {
@@ -89,7 +91,7 @@ class World: PApplet() {
         //drawGrid()
         camera.draw(worldGrid)
         stroke(255)
-        rect(0f, 100f, 100f, 100f)
+        //rect(0f, 100f, 100f, 100f)
     }
 
     fun drawGrid() {
@@ -134,10 +136,15 @@ class World: PApplet() {
         cameraPosX = savedCameraX + diffX
         cameraPosY = savedCameraY + diffY
 
+        camera.move(diffX, diffY)
+
         if (cameraPosX < 0) cameraPosX = 0
         if (cameraPosY < 0) cameraPosY = 0
         if (cameraPosX > worldSizeX * worldPixelSize - width) cameraPosX = (worldSizeX * worldPixelSize - width).toInt()
         if (cameraPosY > worldSizeY * worldPixelSize - height) cameraPosY = (worldSizeY * worldPixelSize - height).toInt()
+
+        clickedMouseX = mouseX
+        clickedMouseY = mouseY
 
         super.mouseDragged(event)
     }
@@ -159,24 +166,24 @@ class World: PApplet() {
     }
 /*
     override fun mouseWheel(event: MouseEvent?) {
-        //TODO scale camera value with difference in worldPixelSize so scrolling makes more sense
+        //TODO scale camera value with difference in chunkSize so scrolling makes more sense
 
         //TODO while fixing camera scaling get blackscreens until screen is moved
         if(event != null) {
             val value = event.count
 
-            val hoveredWorldPixelX = mouseX / worldPixelSize + cameraPosX * worldPixelSize
-            val hoveredWorldPixelY = mouseY / worldPixelSize + cameraPosY * worldPixelSize
+            val hoveredWorldPixelX = mouseX / chunkSize + cameraPosX * chunkSize
+            val hoveredWorldPixelY = mouseY / chunkSize + cameraPosY * chunkSize
 
-            if (value > 0 && worldPixelSize > 1) {
-                worldPixelSize /= scrollScaling
-                if (worldPixelSize < 1) worldPixelSize = 1.0
+            if (value > 0 && chunkSize > 1) {
+                chunkSize /= scrollScaling
+                if (chunkSize < 1) chunkSize = 1.0
             } else if (value < 0) {
-                worldPixelSize *= scrollScaling
+                chunkSize *= scrollScaling
             }
 
-            cameraPosX = (hoveredWorldPixelX * worldPixelSize - mouseX).roundToInt()
-            cameraPosY = (hoveredWorldPixelY * worldPixelSize - mouseY).roundToInt()
+            cameraPosX = (hoveredWorldPixelX * chunkSize - mouseX).roundToInt()
+            cameraPosY = (hoveredWorldPixelY * chunkSize - mouseY).roundToInt()
         }
     }
     */
