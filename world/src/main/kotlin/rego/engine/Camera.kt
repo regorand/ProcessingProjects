@@ -11,7 +11,30 @@ class Camera (val chunkSize: Int, val worldSizeX: Int, val worldSizeY: Int, val 
     private var zoomLevel = 3.0
 
     fun draw(worldGrid: List<List<Chunk>>) {
+        drawNew(worldGrid)
+        drawOld(worldGrid)
+    }
 
+    fun drawNew(worldGrid: List<List<Chunk>>) {
+        val firstPixelX = centerX - screenWidth / 2
+        val firstPixelY = centerY - screenWidth / 2
+
+        var offsetX = 0
+        var offsetY = 0
+        if (firstPixelX < 0) {
+            offsetX -= firstPixelX
+        }
+        if (firstPixelY < 0) {
+            offsetY -= firstPixelY
+        }
+
+        val firstChunkX = firstPixelX / chunkSize
+        val firstChunkY = firstPixelY / chunkSize
+
+
+    }
+
+    fun drawOld(worldGrid: List<List<Chunk>>) {
         //TODO fix bug where scrolling isnt centered -> center not correctly used/calculated ?
 
         val deltaChunkX = (((screenWidth / 2) / chunkSize + 1) / zoomLevel).toInt()
