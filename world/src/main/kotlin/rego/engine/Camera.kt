@@ -12,20 +12,23 @@ class Camera (val chunkSize: Int, val worldSizeX: Int, val worldSizeY: Int, val 
 
     fun draw(worldGrid: List<List<Chunk>>) {
 
-        //TODO subtract remainder off position of first chunk, so that moving around isnt always on chunk borders, but on pixels
+        //TODO fix bug where scrolling isnt centered -> center not correctly used/calculated ?
 
         val deltaChunkX = (((screenWidth / 2) / chunkSize + 1) / zoomLevel).toInt()
         val deltaChunkY = (((screenHeight / 2) / chunkSize + 1) / zoomLevel).toInt()
 
-        var startChunkX = ((centerX.toDouble() / chunkSize) - deltaChunkX).toInt()
-        var startChunkY = ((centerY.toDouble() / chunkSize) - deltaChunkY).toInt()
+        var startChunkX = ((centerX.toDouble() / (chunkSize * zoomLevel).toInt()) - deltaChunkX).toInt()
+        var startChunkY = ((centerY.toDouble() / (chunkSize * zoomLevel).toInt()) - deltaChunkY).toInt()
 
-        var endChunkX = ((centerX.toDouble() / chunkSize) + deltaChunkX).toInt() + 1
-        var endChunkY = ((centerY.toDouble() / chunkSize) + deltaChunkY).toInt() + 1
+        var endChunkX = ((centerX.toDouble() / (chunkSize * zoomLevel).toInt()) + deltaChunkX).toInt() + 1
+        var endChunkY = ((centerY.toDouble() / (chunkSize * zoomLevel).toInt()) + deltaChunkY).toInt() + 1
 
         //var pixelDiffX = (screenWidth - (worldSizeX * chunkSize * zoomLevel).toInt()) / 2
-        val pixelDiffX = if (-startChunkX * chunkSize < -chunkSize * zoomLevel) (-chunkSize * zoomLevel).toInt() else -startChunkX * chunkSize
-        val pixelDiffY = if (-startChunkY * chunkSize < -chunkSize * zoomLevel) (-chunkSize * zoomLevel).toInt() else -startChunkY * chunkSize
+        var pixelDiffX = if (-startChunkX * (chunkSize * zoomLevel) <= 0) 0 else -startChunkX * (chunkSize * zoomLevel).toInt()
+        var pixelDiffY = if (-startChunkY * (chunkSize * zoomLevel) <= 0) 0 else -startChunkY * (chunkSize * zoomLevel).toInt()
+
+        pixelDiffX -= (centerX % (zoomLevel * chunkSize)).toInt()
+        pixelDiffY -= (centerY % (zoomLevel * chunkSize)).toInt()
 
         if (startChunkX < 0) {
             endChunkX -= startChunkX //use subtraction to add startChunk difference because it will always be a negative number
