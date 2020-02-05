@@ -12,26 +12,50 @@ class Camera (val chunkSize: Int, val worldSizeX: Int, val worldSizeY: Int, val 
 
     fun draw(worldGrid: List<List<Chunk>>) {
         drawNew(worldGrid)
-        drawOld(worldGrid)
+        //drawOld(worldGrid)
     }
 
     fun drawNew(worldGrid: List<List<Chunk>>) {
-        val firstPixelX = centerX - screenWidth / 2
-        val firstPixelY = centerY - screenWidth / 2
 
-        var offsetX = 0
-        var offsetY = 0
-        if (firstPixelX < 0) {
-            offsetX -= firstPixelX
+        val centerChunkX = centerX / chunkSize
+        val centerChunkY = centerY / chunkSize
+
+        val centerChunkXPixelOffset = centerX % chunkSize
+        val centerChunkYPixelOffset = centerY % chunkSize
+
+        var totalPixelOffsetX = centerChunkXPixelOffset
+        var totalPixelOffsetY = centerChunkYPixelOffset
+
+        var firstChunkX = centerChunkX - ((screenWidth / 2) / chunkSize + 1)
+        var firstChunkY = centerChunkY - ((screenHeight / 2) / chunkSize + 1)
+
+        if (firstChunkX < 0) {
+            totalPixelOffsetX += -firstChunkX * chunkSize
+            firstChunkX = 0
         }
-        if (firstPixelY < 0) {
-            offsetY -= firstPixelY
+        if (firstChunkY < 0) {
+            totalPixelOffsetY += -firstChunkY * chunkSize
+            firstChunkY = 0
         }
 
-        val firstChunkX = firstPixelX / chunkSize
-        val firstChunkY = firstPixelY / chunkSize
+        val amountChunksToDrawX = screenWidth / (chunkSize * zoomLevel) + 1
+        val amountChunksToDrawY = screenHeight / (chunkSize * zoomLevel) + 1
 
+        val lastChunkToDrawX = min((firstChunkX + amountChunksToDrawX).toInt(), worldSizeX - 1)
+        val lastChunkToDrawY = min((firstChunkY + amountChunksToDrawY).toInt(), worldSizeY - 1)
 
+        //TODO Fix display error for last chunks
+
+        for ((xCount, x) in (firstChunkX..lastChunkToDrawX).withIndex()) {
+            for ((yCount, y) in (firstChunkY..lastChunkToDrawY).withIndex()) {
+                val drawnChunkSize = (chunkSize * zoomLevel).toInt()
+                worldGrid[x][y].draw(
+                    (xCount * drawnChunkSize + totalPixelOffsetX),
+                    (yCount * drawnChunkSize + totalPixelOffsetY),
+                    drawnChunkSize,
+                    drawnChunkSize)
+            }
+        }
     }
 
     fun drawOld(worldGrid: List<List<Chunk>>) {

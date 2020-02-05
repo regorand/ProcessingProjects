@@ -9,10 +9,13 @@ class Player(private val pos: PVector, private val p: PApplet) {
 
     private val rays: MutableList<Float> = mutableListOf()
 
+    private val ANGLE = 70
+    private val MULTIPLIER = 5
+
     init {
-        val multiplier = 5
-        for (i in (-35 * multiplier)..(35 * multiplier)) {
-            rays.add(i.toFloat() / multiplier)
+
+        for (i in (-ANGLE/2 * MULTIPLIER)..(ANGLE/2 * MULTIPLIER)) {
+            rays.add(i.toFloat() / MULTIPLIER)
         }
     }
 
